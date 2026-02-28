@@ -1,31 +1,36 @@
 const wordsDB = {
-    general: ["كتاب","مكتب","عالم","سلام","نجمة","طريق","حياة","سيارة","طائرة","سفينة","مدرسة","حديقة","جامعة","طبيبة","مكتبة","مستشفى","مهندسة","عمليات"],
-    animals: ["أسود","نمور","ذئاب","قرود","دببة","حصان","غزال","فيلة","قطط","كلاب","زرافة","تمساح","عصفور","حمامة","سنجاب","دلافين"],
-    sports: ["ركض","قفز","غوص","تزلج","لعب","سباحة","رماية","تنس","جودو","ملاكمة","جمباز"]
+    general: ["كتاب","مكتب","عالم","سلام","نجمه","طريق","حياه","سياره","طائره","سفينه","مدرسه","حديقه","جامعه","طبيبه","مكتبه","مستشفي","مهندسه","عمليات","اقتصاد","تجاره"],
+    khaleeji: ["جمان","كفوف","ساهر","يوفي","دفعه","شغف","حدود","امينه","الخاطر","العاصوف","ناطحه","زواره","ثريا","رمانه","اقبال","نوايا","عذراء","مجنون","لندن","بيروت","الناجيه","الميراث","انتقام"],
+    food: ["تفاح","موزه","عنبه","بطيخ","بصله","ثومه","خيار","كبسه","برياني","مندي","مقلوبه","شاورما","فلافل","حمص","عصير","قهوه","شاي","حليب"],
+    tech: ["حاسب","شاشه","لوحه","رقمي","برمجه","تطبيق","موقع","هاتف","جوال","شبكه","خادم","بيانات","تخزين","تشفير","ذاكره","معالج"],
+    cities: ["مكه","جده","رياض","دمام","كويت","دوحه","منامه","مسقط","عمان","قاهره","تونس","رباط","بغداد","دمشق","بيروت","صنعاء","دبي","شارقه"],
+    animals: ["اسد","نمر","ذئب","قرد","دب","حصان","غزال","فيل","قط","كلب","زرافه","تمساح","عصفور","حمامه","سنجاب","دلفين","اخطبوط","ثعبان","سلحفاه","صقر"],
+    sports: ["ركض","قفز","غوص","تزلج","لعب","سباحه","رمايه","تنس","جودو","ملاكمه","جمباز","كاراتيه","ماراثون","بطوله","كاس","هدف","ملعب"]
 };
 
-// تشفير وفك تشفير الكلمات للرابط (يدعم العربي)
+const normalizeWord = (word) => {
+    if (!word) return "";
+    return word.replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').replace(/[\u064B-\u065F]/g, '');
+};
 const LinkEngine = {
-    encodeWord: (str) => btoa(encodeURIComponent(str)),
-    decodeWord: (str) => {
-        try { return decodeURIComponent(atob(str)); } 
-        catch(e) { return null; }
-    }
+    encodeWord: (str) => btoa(encodeURIComponent(normalizeWord(str))),
+    decodeWord: (str) => { try { return decodeURIComponent(atob(str)); } catch(e) { return null; } }
 };
 
 const ConfettiEngine = {
     fire() {
         const container = document.getElementById('confetti-container'); container.innerHTML = ''; 
         const colors = ['#fce18a', '#ff726d', '#b48def', '#f4306d', '#10b981', '#3b82f6', '#d4af37'];
-        for(let i=0; i<100; i++) {
+        for(let i=0; i<250; i++) {
             const conf = document.createElement('div'); conf.className = 'confetti-piece';
             conf.style.left = Math.random() * 100 + 'vw';
             conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            conf.style.animationDuration = (Math.random() * 3 + 2) + 's'; conf.style.animationDelay = Math.random() * 0.5 + 's';
+            conf.style.animationDuration = (Math.random() * 4 + 4) + 's';
+            conf.style.animationDelay = Math.random() * 1 + 's';
             if (Math.random() > 0.5) conf.style.borderRadius = '50%';
             container.appendChild(conf);
         }
-        setTimeout(() => container.innerHTML = '', 5000);
+        setTimeout(() => container.innerHTML = '', 9000);
     }
 };
 
@@ -41,36 +46,49 @@ const AudioEngine = {
     },
     click() { this.play(400, 'sine', 0.1, 0.1); },
     error() { this.play(150, 'sawtooth', 0.3, 0.2); },
-    win() { this.play(440, 'triangle', 0.1, 0.1); setTimeout(()=>this.play(554, 'triangle', 0.1, 0.1), 100); setTimeout(()=>this.play(659, 'triangle', 0.4, 0.1), 200); },
-    lose() { this.play(300, 'triangle', 0.2, 0.1); setTimeout(()=>this.play(250, 'triangle', 0.4, 0.1), 200); }
+    win() { this.play(440, 'triangle', 0.1, 0.1); setTimeout(()=>this.play(554, 'triangle', 0.1, 0.1), 100); setTimeout(()=>this.play(659, 'triangle', 0.4, 0.1), 200); setTimeout(()=>this.play(880, 'triangle', 0.6, 0.15), 400); },
+    lose() { this.play(300, 'triangle', 0.2, 0.1); setTimeout(()=>this.play(250, 'triangle', 0.5, 0.15), 200); }
 };
 
+let savedStats = { played: 0, wins: 0, losses: 0, currentStreak: 0, maxStreak: 0 };
+try {
+    let parsed = JSON.parse(localStorage.getItem('wordle_ar_stats'));
+    if (parsed && typeof parsed === 'object') {
+        savedStats = { played: parsed.played || 0, wins: parsed.wins || 0, losses: parsed.losses || 0, currentStreak: parsed.currentStreak || 0, maxStreak: parsed.maxStreak || 0 };
+    }
+} catch(e) {}
+
+let savedCoins = parseInt(localStorage.getItem('wordle_ar_coins'));
+if (isNaN(savedCoins)) savedCoins = 50;
+
 const state = {
-    mode: 'free', // 'free', 'daily', 'friend'
-    difficulty: 'medium', category: 'general', theme: 'modern', wordLength: 5, maxAttempts: 6,
+    mode: 'free', difficulty: 'medium', category: 'general', theme: 'modern', wordLength: 5, maxAttempts: 6,
     timeChallenge: false, timeLeft: 120, timerInterval: null, targetWord: '',
-    currentRow: 0, currentCol: 0, grid: [], gameOver: false, hintsUsed: 0,
-    stats: JSON.parse(localStorage.getItem('wordle_ar_stats')) || { played: 0, wins: 0, losses: 0, currentStreak: 0, maxStreak: 0 }
+    currentRow: 0, currentCol: 0, grid: [], gameOver: false,
+    coins: savedCoins, stats: savedStats
 };
 
 const UI = {
     init() { 
         this.bindEvents(); 
         this.loadSettings();
+        this.updateCoins();
         this.checkURLForFriendChallenge();
     },
     
+    updateCoins() {
+        document.getElementById('coin-count').innerText = state.coins;
+        localStorage.setItem('wordle_ar_coins', state.coins);
+    },
+
     checkURLForFriendChallenge() {
         const urlParams = new URLSearchParams(window.location.search);
         const w = urlParams.get('w');
         if (w) {
             const decoded = LinkEngine.decodeWord(w);
             if(decoded && decoded.length >= 4 && decoded.length <= 6) {
-                state.mode = 'friend';
-                state.targetWord = decoded;
-                state.wordLength = decoded.length;
+                state.mode = 'friend'; state.targetWord = decoded; state.wordLength = decoded.length;
                 state.maxAttempts = decoded.length === 4 ? 7 : (decoded.length === 5 ? 6 : 5);
-                
                 document.getElementById('standard-options').classList.add('hidden');
                 document.getElementById('friend-challenge-msg').classList.remove('hidden');
             }
@@ -78,40 +96,28 @@ const UI = {
     },
 
     bindEvents() {
-        // Main Menu Buttons
-        document.getElementById('btn-daily-word').addEventListener('click', () => {
-            AudioEngine.click(); state.mode = 'daily'; Game.start();
-        });
-        document.getElementById('btn-start-free').addEventListener('click', () => {
-            AudioEngine.click(); state.mode = 'free'; Game.start();
-        });
-        document.getElementById('btn-start-friend').addEventListener('click', () => {
-            AudioEngine.click(); Game.start(); // targetWord is already set from URL
-        });
+        document.getElementById('btn-daily-word').addEventListener('click', () => { AudioEngine.click(); state.mode = 'daily'; Game.start(); });
+        document.getElementById('btn-start-free').addEventListener('click', () => { AudioEngine.click(); state.mode = 'free'; Game.start(); });
+        document.getElementById('btn-start-friend').addEventListener('click', () => { AudioEngine.click(); Game.start(); });
+        
         document.getElementById('btn-cancel-friend').addEventListener('click', () => {
-            // Remove URL parameter without reloading
             window.history.replaceState({}, document.title, window.location.pathname);
             document.getElementById('friend-challenge-msg').classList.add('hidden');
             document.getElementById('standard-options').classList.remove('hidden');
         });
 
-        // Create Challenge Logic
-        document.getElementById('btn-create-challenge').addEventListener('click', () => {
-            AudioEngine.click(); this.showModal('modal-challenge');
-        });
+        document.getElementById('btn-create-challenge').addEventListener('click', () => { AudioEngine.click(); this.showModal('modal-challenge'); });
+        
         document.getElementById('btn-generate-link').addEventListener('click', () => {
             const word = document.getElementById('challenge-input').value.trim();
-            if(word.length < 4 || word.length > 6 || !/^[\u0600-\u06FF]+$/.test(word)) {
-                this.showToast('الرجاء إدخال كلمة عربية من 4 إلى 6 حروف'); return;
-            }
+            if(word.length < 4 || word.length > 6 || !/^[\u0600-\u06FF]+$/.test(word)) { this.showToast('الرجاء إدخال كلمة عربية من 4 إلى 6 حروف'); return; }
             const link = window.location.origin + window.location.pathname + '?w=' + LinkEngine.encodeWord(word);
             navigator.clipboard.writeText(link).then(() => {
-                this.showToast('✅ تم النسخ! ارسله لصديقك الآن');
+                this.showToast('✅ تم نسخ الرابط بنجاح! ارسله لصديقك');
                 document.getElementById('modal-challenge').classList.add('hidden');
             });
         });
 
-        // Selectors (Categories, Difficulty, Themes)
         document.querySelectorAll('.seg-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 AudioEngine.click();
@@ -136,10 +142,16 @@ const UI = {
             });
         });
 
-        // Utils
         document.getElementById('btn-reset').addEventListener('click', () => location.reload());
+        document.getElementById('btn-new-game').addEventListener('click', () => {
+            document.getElementById('modal-stats').classList.add('hidden');
+            if(state.mode === 'free') Game.start(); else location.reload();
+        });
+        
         document.getElementById('btn-stats').addEventListener('click', () => this.showModal('modal-stats'));
+        document.getElementById('btn-help').addEventListener('click', () => this.showModal('modal-help'));
         document.getElementById('btn-settings').addEventListener('click', () => this.showModal('modal-settings'));
+        
         document.querySelectorAll('.close-modal').forEach(btn => btn.addEventListener('click', (e) => e.target.closest('.modal').classList.add('hidden')));
         document.getElementById('btn-hint').addEventListener('click', Game.useHint);
         document.getElementById('btn-share').addEventListener('click', Game.shareResult);
@@ -158,6 +170,7 @@ const UI = {
     },
 
     showModal(id) { document.getElementById(id).classList.remove('hidden'); if(id === 'modal-stats') this.updateStatsUI(); },
+    
     updateStatsUI() {
         document.getElementById('stat-played').innerText = state.stats.played;
         let winPct = state.stats.played > 0 ? Math.round((state.stats.wins / state.stats.played) * 100) : 0;
@@ -207,37 +220,66 @@ const UI = {
 
 const Game = {
     start() {
-        // إعداد بناء على الطور المختار
         if(state.mode === 'daily') {
             state.wordLength = 5; state.maxAttempts = 6; state.timeChallenge = false;
-            // اختيار كلمة بناءً على تاريخ اليوم (نفس الكلمة لجميع من يلعب اليوم)
-            const today = new Date();
-            const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-            const all5Letter = [...wordsDB.general, ...wordsDB.animals, ...wordsDB.sports].filter(w => w.length === 5);
-            state.targetWord = all5Letter[seed % all5Letter.length];
+            const today = new Date(); const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+            const all5Letter = Object.values(wordsDB).flat().filter(w => w.length === 5);
+            state.targetWord = normalizeWord(all5Letter[seed % all5Letter.length]);
         } 
         else if (state.mode === 'free') {
             if(state.difficulty === 'easy') { state.wordLength = 4; state.maxAttempts = 7; }
             else if(state.difficulty === 'medium') { state.wordLength = 5; state.maxAttempts = 6; }
             else { state.wordLength = 6; state.maxAttempts = 5; }
-            state.timeChallenge = document.getElementById('time-challenge').checked;
+            
+            // حل المشكلة هنا: إذا لم نجد زر time-challenge نفترض false، وإذا الصعوبة hard نفرض true
+            const timeEl = document.getElementById('time-challenge');
+            state.timeChallenge = timeEl ? timeEl.checked : false;
             if(state.difficulty === 'hard') state.timeChallenge = true;
             
             let possibleWords = wordsDB[state.category] ? wordsDB[state.category].filter(w => w.length === state.wordLength) : [];
             if(possibleWords.length === 0) possibleWords = wordsDB['general'].filter(w => w.length === state.wordLength);
-            state.targetWord = possibleWords[Math.floor(Math.random() * possibleWords.length)];
+            
+            // حماية إضافية لتجنب الأعطال في حال الفئة فارغة
+            let randomWord = possibleWords[Math.floor(Math.random() * possibleWords.length)] || "سلام";
+            state.targetWord = normalizeWord(randomWord);
         }
-        // حالة الصديق state.mode === 'friend' معرفة مسبقاً في checkURLForFriendChallenge
 
         state.grid = Array(state.maxAttempts).fill().map(() => Array(state.wordLength).fill(''));
-        state.currentRow = 0; state.currentCol = 0; state.gameOver = false; state.hintsUsed = 0;
-
+        state.currentRow = 0; state.currentCol = 0; state.gameOver = false;
+        
         document.getElementById('start-menu').classList.add('hidden');
         document.getElementById('game-screen').classList.remove('hidden');
         document.getElementById('game-result-area').classList.add('hidden');
-        if(state.difficulty === 'easy' || state.mode === 'friend') document.getElementById('btn-hint').classList.remove('hidden');
+        document.getElementById('btn-hint').classList.remove('hidden');
         
         UI.buildBoard(); UI.buildKeyboard();
+
+        if(state.timeChallenge) {
+            document.getElementById('timer-container').classList.remove('hidden');
+            this.startTimer(state.difficulty === 'hard' ? 90 : 120);
+        } else {
+            document.getElementById('timer-container').classList.add('hidden');
+            clearInterval(state.timerInterval);
+        }
+    },
+
+    startTimer(seconds) {
+        clearInterval(state.timerInterval); state.timeLeft = seconds;
+        const timerBar = document.getElementById('timer-bar');
+        const timerText = document.getElementById('timer-text');
+        timerBar.style.width = '100%'; timerBar.style.backgroundColor = 'var(--correct)';
+        timerText.innerText = `⏳ المتبقي: ${state.timeLeft} ثانية`;
+        timerText.style.color = 'var(--timer-color)';
+
+        state.timerInterval = setInterval(() => {
+            if(state.gameOver) { clearInterval(state.timerInterval); return; }
+            state.timeLeft--;
+            timerText.innerText = `⏳ المتبقي: ${state.timeLeft} ثانية`;
+            const pct = (state.timeLeft / seconds) * 100; timerBar.style.width = `${pct}%`;
+            
+            if(pct < 30) { timerBar.style.backgroundColor = 'var(--timer-color)'; timerText.classList.add('shake'); }
+            if(state.timeLeft <= 0) { clearInterval(state.timerInterval); Game.endGame(false, "انتهى الوقت! ⏰"); }
+        }, 1000);
     },
 
     handlePhysicalKeyboard(e) {
@@ -269,9 +311,9 @@ const Game = {
 
     submitGuess() {
         const guessArr = state.grid[state.currentRow];
-        const guessStr = guessArr.join('');
-        const result = this.evaluateGuess(guessArr, state.targetWord.split(''));
-        this.animateRow(result, guessStr === state.targetWord);
+        const normalizedGuessArr = guessArr.map(char => normalizeWord(char));
+        const result = this.evaluateGuess(normalizedGuessArr, state.targetWord.split(''));
+        this.animateRow(result, normalizedGuessArr.join('') === state.targetWord);
     },
 
     evaluateGuess(guess, target) {
@@ -315,36 +357,45 @@ const Game = {
     },
 
     useHint() {
-        if(state.hintsUsed >= 2) { UI.showToast('نفدت التلميحات!'); return; }
+        if (state.coins < 15) { UI.showToast('لا يوجد لديك عملات كافية للتلميح (تحتاج 15)'); return; }
+        state.coins -= 15; UI.updateCoins();
         const targetArr = state.targetWord.split(''); const letter = targetArr[Math.floor(Math.random() * targetArr.length)];
-        UI.showToast(`تلميح: الكلمة تحتوي على حرف "${letter}"`); state.hintsUsed++;
+        UI.showToast(`💡 تلميح: الكلمة تحتوي على حرف "${letter}"`);
     },
 
     endGame(isWin, msg = null) {
-        state.gameOver = true; 
+        state.gameOver = true; clearInterval(state.timerInterval);
         
-        // لا نسجل إحصائيات تحدي الصديق حتى لا نلخبط أرقام اللعب الحر
         if(state.mode !== 'friend') {
             state.stats.played++;
             if(isWin) {
                 state.stats.wins++; state.stats.currentStreak++;
                 if(state.stats.currentStreak > state.stats.maxStreak) state.stats.maxStreak = state.stats.currentStreak;
-            } else {
-                state.stats.losses++; state.stats.currentStreak = 0;
-            }
+            } else { state.stats.losses++; state.stats.currentStreak = 0; }
             localStorage.setItem('wordle_ar_stats', JSON.stringify(state.stats));
         }
 
+        let coinsEarned = 0;
         if(isWin) {
             AudioEngine.win(); ConfettiEngine.fire();
+            coinsEarned = state.mode === 'daily' ? 25 : 15; 
+            state.coins += coinsEarned;
             for(let c=0; c<state.wordLength; c++) { setTimeout(() => document.getElementById(`tile-${state.currentRow}-${c}`).classList.add('win-bounce'), c * 100); }
-        } else { AudioEngine.lose(); }
+        } else { AudioEngine.lose(); coinsEarned = 5; state.coins += coinsEarned; } 
+        
+        UI.updateCoins();
 
         setTimeout(() => {
             const title = document.getElementById('result-title'); const wordLabel = document.getElementById('result-word');
+            const coinsLabel = document.getElementById('result-coins');
+            
             if(isWin) { title.innerText = '🎉 أحسنت! إجابة صحيحة'; title.style.color = 'var(--correct)'; }
             else { title.innerText = msg ? msg : '😔 للأسف نفدت المحاولات'; title.style.color = 'var(--timer-color)'; }
+            
             wordLabel.innerHTML = `الكلمة كانت: <strong>${state.targetWord}</strong>`;
+            coinsLabel.innerText = `لقد ربحت +${coinsEarned} عملة معدنية`;
+            
+            document.getElementById('btn-new-game').style.display = state.mode === 'free' ? 'flex' : 'none';
             document.getElementById('game-result-area').classList.remove('hidden');
             UI.showModal('modal-stats');
         }, 1500);
@@ -362,11 +413,8 @@ const Game = {
             }
             gridEmoji += '\n';
         }
-        
-        // إذا كان تحدي صديق نرفق رابط اللعبة
         if(state.mode === 'friend') gridEmoji += `\nجرب اللعبة بنفسك:\n${window.location.origin + window.location.pathname}`;
-
-        navigator.clipboard.writeText(gridEmoji).then(() => UI.showToast('تم نسخ النتيجة للحافظة! 🔗'));
+        navigator.clipboard.writeText(gridEmoji).then(() => UI.showToast('✅ تم النسخ بنجاح! شاركها الآن.'));
     }
 };
 
