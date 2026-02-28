@@ -13,64 +13,133 @@
     <div id="confetti-container"></div>
 
     <header>
-        <div class="header-icon" id="btn-stats" aria-label="الإحصائيات">📊</div>
+        <div class="header-icon" id="btn-stats" aria-label="الإحصائيات">
+            <svg class="nano-icon" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        </div>
+        <div class="header-icon" id="btn-help" aria-label="كيف تلعب">
+            <svg class="nano-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
         <h1 class="title">الكلمة المفقودة</h1>
-        <div class="header-icon" id="btn-settings" aria-label="الإعدادات">⚙️</div>
+        <div class="coin-balance" id="coin-display">
+            <svg class="nano-coin" viewBox="0 0 24 24" fill="none">
+                <defs>
+                    <linearGradient id="coinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFF8D6" />
+                        <stop offset="50%" stop-color="#F6C800" />
+                        <stop offset="100%" stop-color="#D4AF37" />
+                    </linearGradient>
+                </defs>
+                <circle cx="12" cy="12" r="10" fill="url(#coinGrad)" stroke="#B8860B" stroke-width="1.5"/>
+                <path d="M12 6V18" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+                <path d="M12 6V18" stroke="#B8860B" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="6" stroke="#B8860B" stroke-width="1" stroke-dasharray="2 2" fill="none"/>
+            </svg>
+            <span id="coin-count">50</span>
+        </div>
+        <div class="header-icon" id="btn-settings" aria-label="الإعدادات">
+            <svg class="nano-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
     </header>
 
-    <div id="timer-container" class="hidden"><div id="timer-bar"></div></div>
+    <div id="timer-container" class="hidden">
+        <div id="timer-text">120 ثانية</div>
+        <div id="timer-bar-bg"><div id="timer-bar"></div></div>
+    </div>
 
     <main id="start-menu" class="screen active">
         <div class="glass-panel" id="main-menu-panel">
-            <h2>مرحباً بك! 👋</h2>
+            <h2 style="margin-bottom: 20px;">مرحباً بك! 👋</h2>
             
             <div id="friend-challenge-msg" class="hidden" style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--correct);">
-                <h3 style="color: var(--correct); margin-bottom: 5px;">🔥 تحدي جديد!</h3>
+                <h3 style="color: var(--correct); margin-bottom: 5px;">تحدي جديد!</h3>
                 <p>صديقك يتحداك في تخمين كلمته السرية.</p>
                 <button id="btn-start-friend" class="primary-btn" style="margin-top: 10px;">اقبل التحدي الآن</button>
                 <button id="btn-cancel-friend" style="margin-top: 10px; background: transparent; border: none; color: var(--text-secondary); text-decoration: underline; cursor: pointer;">إلغاء واللعب الحر</button>
             </div>
 
             <div id="standard-options">
-                <button id="btn-daily-word" class="primary-btn" style="margin-bottom: 15px; background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);">🌟 كلمة اليوم (موحدة للجميع)</button>
-                <button id="btn-create-challenge" class="primary-btn" style="margin-bottom: 20px; background: var(--glass-bg); color: var(--text-primary); border: 2px solid var(--primary-color); box-shadow: none;">🔗 أنشئ تحدي لصديق</button>
+                <button id="btn-daily-word" class="primary-btn" style="margin-bottom: 15px; background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);">
+                    <svg class="nano-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    كلمة اليوم (موحدة للجميع)
+                </button>
+                <button id="btn-create-challenge" class="primary-btn" style="margin-bottom: 20px; background: var(--glass-bg); color: var(--text-primary); border: 2px solid var(--primary-color); box-shadow: none;">
+                    <svg class="nano-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    أنشئ تحدي لصديق
+                </button>
                 
                 <hr style="border-color: var(--glass-border); margin-bottom: 20px; opacity: 0.5;">
                 <p style="text-align: right; margin-bottom: 10px; font-weight: bold;">أو العب لعباً حراً (بدون حدود):</p>
 
                 <div class="custom-selector-group">
-                    <div class="segmented-control" id="category-selector">
+                    <label>اختر التصنيف:</label>
+                    <div class="segmented-control scrollable" id="category-selector">
                         <button class="seg-btn active" data-val="general">عام</button>
+                        <button class="seg-btn" data-val="khaleeji">مسلسلات خليجية</button>
+                        <button class="seg-btn" data-val="food">أكل</button>
+                        <button class="seg-btn" data-val="tech">تقنية</button>
+                        <button class="seg-btn" data-val="cities">مدن</button>
                         <button class="seg-btn" data-val="animals">حيوانات</button>
                         <button class="seg-btn" data-val="sports">رياضة</button>
                     </div>
                 </div>
 
                 <div class="custom-selector-group">
+                    <label>مستوى الصعوبة:</label>
                     <div class="options-group">
                         <button class="diff-btn" data-diff="easy">سهل <small>(4 حروف)</small></button>
                         <button class="diff-btn active" data-diff="medium">متوسط <small>(5 حروف)</small></button>
                         <button class="diff-btn" data-diff="hard">صعب <small>(6 حروف، وقت)</small></button>
                     </div>
                 </div>
-                <button id="btn-start-free" class="primary-btn">▶️ بدء اللعب الحر</button>
+                <button id="btn-start-free" class="primary-btn">
+                    <svg class="nano-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    بدء اللعب الحر
+                </button>
             </div>
         </div>
     </main>
 
     <main id="game-screen" class="screen hidden">
         <div class="top-actions">
-            <button id="btn-hint" class="action-btn hidden">💡 تلميح</button>
-            <button id="btn-reset" class="action-btn">🔄 خروج</button>
+            <button id="btn-hint" class="action-btn hidden">
+                <svg class="nano-icon" style="width: 18px; height: 18px;" viewBox="0 0 24 24"><path d="M8 22h8"/><path d="M10 18h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.2 1.3 4.1 3 5.3V16a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1.7c1.7-1.2 3-3.1 3-5.3a7 7 0 0 0-7-7z"/></svg> 
+                تلميح (-15)
+            </button>
+            <button id="btn-reset" class="action-btn">
+                <svg class="nano-icon" style="width: 18px; height: 18px;" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                خروج
+            </button>
         </div>
         <div id="board-container"><div id="board"></div></div>
         <div id="keyboard"></div>
     </main>
 
+    <div id="modal-help" class="modal hidden">
+        <div class="modal-content glass-panel" style="text-align: right;">
+            <button class="close-modal"><svg class="nano-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            <h2 style="text-align: center; margin-bottom: 20px;">كيف تلعب؟</h2>
+            <p style="margin-bottom: 15px; line-height: 1.6;">خمن <strong>الكلمة المفقودة</strong> في 6 محاولات. بعد كل محاولة، سيتغير لون المربعات لتوضيح مدى قربك من الكلمة الصحيحة.</p>
+            <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--text-secondary);">ملاحظة: اللعبة تتجاهل الهمزات والتشكيل (أ = ا، ة = ه).</p>
+            <hr style="border-color: var(--glass-border); margin-bottom: 15px; opacity: 0.5;">
+            <div class="help-example">
+                <div class="help-row"><div class="tile correct mini">ك</div><div class="tile mini">ت</div><div class="tile mini">ا</div><div class="tile mini">ب</div></div>
+                <p>حرف <strong>(ك)</strong> موجود في الكلمة وفي <strong>المكان الصحيح</strong>.</p>
+            </div>
+            <div class="help-example">
+                <div class="help-row"><div class="tile mini">ق</div><div class="tile present mini">ل</div><div class="tile mini">م</div></div>
+                <p>حرف <strong>(ل)</strong> موجود في الكلمة ولكن في <strong>مكان خاطئ</strong>.</p>
+            </div>
+            <div class="help-example">
+                <div class="help-row"><div class="tile mini">ش</div><div class="tile mini">م</div><div class="tile absent mini">س</div></div>
+                <p>حرف <strong>(س)</strong> <strong>غير موجود</strong> في الكلمة نهائياً.</p>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-challenge" class="modal hidden">
         <div class="modal-content glass-panel">
-            <button class="close-modal">✖</button>
-            <h2>أنشئ تحدي لصديق 🔗</h2>
+            <button class="close-modal"><svg class="nano-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            <h2>أنشئ تحدي لصديق</h2>
             <p style="margin-bottom: 15px; color: var(--text-secondary);">اكتب كلمة (من 4 إلى 6 حروف) وارسل الرابط لصديقك ليحاول تخمينها!</p>
             <input type="text" id="challenge-input" placeholder="اكتب الكلمة هنا..." maxlength="6" style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid var(--tile-border); background: var(--tile-bg); color: var(--text-primary); font-size: 1.2rem; text-align: center; margin-bottom: 15px; font-weight: bold;">
             <button id="btn-generate-link" class="primary-btn">انسخ رابط التحدي</button>
@@ -79,8 +148,8 @@
 
     <div id="modal-stats" class="modal hidden">
         <div class="modal-content glass-panel">
-            <button class="close-modal">✖</button>
-            <h2>الإحصائيات</h2>
+            <button class="close-modal"><svg class="nano-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            <h2>النتيجة والإحصائيات</h2>
             <div class="stats-grid">
                 <div class="stat-box"><span id="stat-played">0</span><small>لعب</small></div>
                 <div class="stat-box"><span id="stat-winpct">0%</span><small>فوز</small></div>
@@ -89,18 +158,22 @@
             </div>
             <div id="game-result-area" class="hidden">
                 <h3 id="result-title"></h3>
-                <p id="result-word"></p>
-                <button id="btn-share" class="primary-btn">🔗 شارك النتيجة</button>
+                <p id="result-word" style="font-size: 1.2rem; margin: 10px 0;"></p>
+                <p id="result-coins" style="font-weight: bold; margin-bottom: 15px; color: var(--present);"></p>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button id="btn-share" class="primary-btn" style="flex: 1;">شارك النتيجة</button>
+                    <button id="btn-new-game" class="primary-btn" style="flex: 1; background: var(--correct);">العب مجدداً</button>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="modal-settings" class="modal hidden">
         <div class="modal-content glass-panel">
-            <button class="close-modal">✖</button>
+            <button class="close-modal"><svg class="nano-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
             <h2>الإعدادات</h2>
             <div class="custom-selector-group">
-                <label>🎨 المظهر (الثيم):</label>
+                <label>المظهر (الثيم):</label>
                 <div class="segmented-control" id="theme-selector">
                     <button class="seg-btn active" data-val="modern">حديث</button>
                     <button class="seg-btn" data-val="dark">داكن</button>
