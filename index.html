@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+    <title>لعبة الكلمات | Wordle Arabic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="modern">
+    <div id="confetti-container"></div>
+
+    <header>
+        <div class="header-icon" id="btn-stats" aria-label="الإحصائيات">📊</div>
+        <h1 class="title">الكلمة المفقودة</h1>
+        <div class="header-icon" id="btn-settings" aria-label="الإعدادات">⚙️</div>
+    </header>
+
+    <div id="timer-container" class="hidden"><div id="timer-bar"></div></div>
+
+    <main id="start-menu" class="screen active">
+        <div class="glass-panel" id="main-menu-panel">
+            <h2>مرحباً بك! 👋</h2>
+            
+            <div id="friend-challenge-msg" class="hidden" style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--correct);">
+                <h3 style="color: var(--correct); margin-bottom: 5px;">🔥 تحدي جديد!</h3>
+                <p>صديقك يتحداك في تخمين كلمته السرية.</p>
+                <button id="btn-start-friend" class="primary-btn" style="margin-top: 10px;">اقبل التحدي الآن</button>
+                <button id="btn-cancel-friend" style="margin-top: 10px; background: transparent; border: none; color: var(--text-secondary); text-decoration: underline; cursor: pointer;">إلغاء واللعب الحر</button>
+            </div>
+
+            <div id="standard-options">
+                <button id="btn-daily-word" class="primary-btn" style="margin-bottom: 15px; background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);">🌟 كلمة اليوم (موحدة للجميع)</button>
+                <button id="btn-create-challenge" class="primary-btn" style="margin-bottom: 20px; background: var(--glass-bg); color: var(--text-primary); border: 2px solid var(--primary-color); box-shadow: none;">🔗 أنشئ تحدي لصديق</button>
+                
+                <hr style="border-color: var(--glass-border); margin-bottom: 20px; opacity: 0.5;">
+                <p style="text-align: right; margin-bottom: 10px; font-weight: bold;">أو العب لعباً حراً (بدون حدود):</p>
+
+                <div class="custom-selector-group">
+                    <div class="segmented-control" id="category-selector">
+                        <button class="seg-btn active" data-val="general">عام</button>
+                        <button class="seg-btn" data-val="animals">حيوانات</button>
+                        <button class="seg-btn" data-val="sports">رياضة</button>
+                    </div>
+                </div>
+
+                <div class="custom-selector-group">
+                    <div class="options-group">
+                        <button class="diff-btn" data-diff="easy">سهل <small>(4 حروف)</small></button>
+                        <button class="diff-btn active" data-diff="medium">متوسط <small>(5 حروف)</small></button>
+                        <button class="diff-btn" data-diff="hard">صعب <small>(6 حروف، وقت)</small></button>
+                    </div>
+                </div>
+                <button id="btn-start-free" class="primary-btn">▶️ بدء اللعب الحر</button>
+            </div>
+        </div>
+    </main>
+
+    <main id="game-screen" class="screen hidden">
+        <div class="top-actions">
+            <button id="btn-hint" class="action-btn hidden">💡 تلميح</button>
+            <button id="btn-reset" class="action-btn">🔄 خروج</button>
+        </div>
+        <div id="board-container"><div id="board"></div></div>
+        <div id="keyboard"></div>
+    </main>
+
+    <div id="modal-challenge" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <button class="close-modal">✖</button>
+            <h2>أنشئ تحدي لصديق 🔗</h2>
+            <p style="margin-bottom: 15px; color: var(--text-secondary);">اكتب كلمة (من 4 إلى 6 حروف) وارسل الرابط لصديقك ليحاول تخمينها!</p>
+            <input type="text" id="challenge-input" placeholder="اكتب الكلمة هنا..." maxlength="6" style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid var(--tile-border); background: var(--tile-bg); color: var(--text-primary); font-size: 1.2rem; text-align: center; margin-bottom: 15px; font-weight: bold;">
+            <button id="btn-generate-link" class="primary-btn">انسخ رابط التحدي</button>
+        </div>
+    </div>
+
+    <div id="modal-stats" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <button class="close-modal">✖</button>
+            <h2>الإحصائيات</h2>
+            <div class="stats-grid">
+                <div class="stat-box"><span id="stat-played">0</span><small>لعب</small></div>
+                <div class="stat-box"><span id="stat-winpct">0%</span><small>فوز</small></div>
+                <div class="stat-box"><span id="stat-streak">0</span><small>السلسلة</small></div>
+                <div class="stat-box"><span id="stat-maxstreak">0</span><small>أعلى سلسلة</small></div>
+            </div>
+            <div id="game-result-area" class="hidden">
+                <h3 id="result-title"></h3>
+                <p id="result-word"></p>
+                <button id="btn-share" class="primary-btn">🔗 شارك النتيجة</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-settings" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <button class="close-modal">✖</button>
+            <h2>الإعدادات</h2>
+            <div class="custom-selector-group">
+                <label>🎨 المظهر (الثيم):</label>
+                <div class="segmented-control" id="theme-selector">
+                    <button class="seg-btn active" data-val="modern">حديث</button>
+                    <button class="seg-btn" data-val="dark">داكن</button>
+                    <button class="seg-btn" data-val="ramadan">رمضان</button>
+                </div>
+            </div>
+            <div class="settings-group toggle-group">
+                <label for="sound-toggle">المؤثرات الصوتية</label>
+                <input type="checkbox" id="sound-toggle" checked>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>

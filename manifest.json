@@ -1,0 +1,17 @@
+{
+    "name": "لعبة الكلمة المفقودة",
+    "short_name": "الكلمة",
+    "description": "لعبة تخمين الكلمات العربية الممتعة",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#fdfbfb",
+    "theme_color": "#3b82f6",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "https://cdn-icons-png.flaticon.com/512/3750/3750400.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
