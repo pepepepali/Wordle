@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3b82f6" id="theme-meta">
+    <title>الكلمة المفقودة | Wordle Arabic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="modern" data-colorblind="false">
+    <canvas id="confetti-canvas"></canvas>
+
+    <header>
+        <div class="header-icon" id="btn-stats" aria-label="الإحصائيات">
+            <svg class="nano-icon" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        </div>
+        <div class="header-icon" id="btn-leaderboard" aria-label="لوحة الصدارة">
+            <svg class="nano-icon" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0V4z"/></svg>
+        </div>
+        <div class="header-icon" id="btn-help" aria-label="كيف تلعب">
+            <svg class="nano-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        
+        <h1 class="title">الكلمة المفقودة</h1>
+        
+        <div class="coin-balance" id="coin-display">
+            <svg class="nano-coin" viewBox="0 0 24 24" fill="none">
+                <defs><linearGradient id="coinGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFF8D6" /><stop offset="50%" stop-color="#F6C800" /><stop offset="100%" stop-color="#D4AF37" /></linearGradient></defs>
+                <circle cx="12" cy="12" r="10" fill="url(#coinGrad)" stroke="#B8860B" stroke-width="1.5"/>
+                <path d="M12 6V18" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+                <path d="M12 6V18" stroke="#B8860B" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span id="coin-count">50</span>
+        </div>
+        <div class="header-icon" id="btn-settings" aria-label="الإعدادات">
+            <svg class="nano-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+    </header>
+
+    <div id="timer-container" class="hidden">
+        <div id="timer-text">120 ثانية</div>
+        <div id="timer-bar-bg"><div id="timer-bar"></div></div>
+    </div>
+
+    <main id="start-menu" class="screen active">
+        <div class="glass-panel" id="main-menu-panel">
+            <h2 style="margin-bottom: 5px;">مرحباً بك! 👋</h2>
+            
+            <div id="friend-challenge-msg" class="hidden" style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--correct);">
+                <h3 style="color: var(--correct); margin-bottom: 5px;">تحدي جديد!</h3>
+                <p>صديقك يتحداك في تخمين كلمته السرية.</p>
+                <button id="btn-start-friend" class="primary-btn" style="margin-top: 10px;">اقبل التحدي الآن</button>
+                <button id="btn-cancel-friend" style="margin-top: 10px; background: transparent; border: none; color: var(--text-secondary); text-decoration: underline; cursor: pointer;">إلغاء واللعب الحر</button>
+            </div>
+
+            <div id="standard-options">
+                <button id="btn-daily-word" class="primary-btn" style="margin-top: 15px; margin-bottom: 5px; background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); transition: all 0.3s;">
+                    <svg class="nano-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    كلمة اليوم
+                </button>
+                <p id="next-daily-menu" style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; font-weight: bold;">التحدي القادم بعد: --:--:--</p>
+                
+                <button id="btn-create-challenge" class="primary-btn" style="margin-bottom: 20px; background: var(--glass-bg); color: var(--text-primary); border: 2px solid var(--primary-color); box-shadow: none;">
+                    <svg class="nano-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    أنشئ تحدي لصديق
+                </button>
+                
+                <hr style="border-color: var(--glass-border); margin-bottom: 20px; opacity: 0.5;">
+                
+                <div class="custom-selector-group">
+                    <div class="segmented-control scrollable" id="category-selector">
+                        <button class="seg-btn active" data-val="general">عام</button>
+                        <button class="seg-btn" data-val="khaleeji">مسلسلات</button>
+                        <button class="seg-btn" data-val="food">أكل</button>
+                        <button class="seg-btn" data-val="tech">تقنية</button>
+                        <button class="seg-btn" data-val="cities">مدن</button>
+                        <button class="seg-btn" data-val="animals">حيوانات</button>
+                        <button class="seg-btn" data-val="sports">رياضة</button>
+                    </div>
+                </div>
+
+                <div class="custom-selector-group">
+                    <div class="options-group">
+                        <button class="diff-btn" data-diff="easy">سهل <small>(4 حروف)</small></button>
+                        <button class="diff-btn active" data-diff="medium">متوسط <small>(5 حروف)</small></button>
+                        <button class="diff-btn" data-diff="hard">صعب <small>(6 حروف، وقت)</small></button>
+                    </div>
+                </div>
+                <button id="btn-start-free" class="primary-btn">
+                    <svg class="nano-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    بدء اللعب الحر
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <main id="game-screen" class="screen hidden">
+        <div class="top-actions">
+            <button id="btn-hint" class="action-btn hidden">💡 تلميح (-15)</button>
+            <div id="attempts-indicator" class="attempts-dots"></div>
+            <button id="btn-reset" class="action-btn">🔄 خروج</button>
+        </div>
+        <div id="board-container"><div id="board"></div></div>
+        <div id="keyboard"></div>
+    </main>
+
+    <div id="modal-extra-chance" class="modal hidden">
+        <div class="modal-content glass-panel" style="text-align: center; border-color: var(--present);">
+            <h2 style="color: var(--present); margin-bottom: 15px;">⚠️ فرصة أخيرة!</h2>
+            <p style="margin-bottom: 20px;">لقد استنفدت محاولاتك! هل تريد شراء <strong>محاولة إضافية سابعة</strong> مقابل 50 عملة لإنقاذ السلسلة؟</p>
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-buy-chance" class="primary-btn" style="flex: 1; background: var(--present); color: #fff;">نعم (-50 🪙)</button>
+                <button id="btn-refuse-chance" class="primary-btn" style="flex: 1; background: transparent; border: 2px solid var(--timer-color); color: var(--text-primary);">لا، أستسلم</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-help" class="modal hidden">
+        <div class="modal-content glass-panel" style="text-align: right; overflow-y: auto; max-height: 90vh;">
+            <button class="close-modal"><svg class="nano-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            <h2 style="text-align: center; margin-bottom: 20px;">كيف تلعب؟ 🎮</h2>
+            <p style="margin-bottom: 15px; line-height: 1.6;">خمن <strong>الكلمة المفقودة</strong> في 6 محاولات. بعد كل محاولة، سيتغير لون المربعات لتوضيح مدى قربك من الكلمة الصحيحة.</p>
+            <hr style="border-color: var(--glass-border); margin-bottom: 15px; opacity: 0.5;">
+            
+            <div class="help-example">
+                <div class="help-row">
+                    <div class="tile correct mini">ك</div><div class="tile mini">ت</div><div class="tile mini">ا</div><div class="tile mini">ب</div>
+                </div>
+                <p>حرف <strong>(ك)</strong> موجود في الكلمة وفي <strong>المكان الصحيح</strong>.</p>
+            </div>
+            <div class="help-example">
+                <div class="help-row">
+                    <div class="tile mini">ق</div><div class="tile present mini">ل</div><div class="tile mini">م</div>
+                </div>
+                <p>حرف <strong>(ل)</strong> موجود في الكلمة ولكن في <strong>مكان خاطئ</strong>.</p>
+            </div>
+            <div class="help-example" style="margin-bottom: 20px;">
+                <div class="help-row">
+                    <div class="tile mini">ش</div><div class="tile mini">م</div><div class="tile absent mini">س</div>
+                </div>
+                <p>حرف <strong>(س)</strong> <strong>غير موجود</strong> في الكلمة نهائياً.</p>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.05); padding: 15px; border-radius: 12px; font-size: 0.95rem;">
+                <p style="margin-bottom: 8px; color: var(--primary-color);"><strong>🪙 نظام العملات والمكافآت:</strong></p>
+                <ul style="padding-right: 20px; margin-bottom: 15px; line-height: 1.6;">
+                    <li>الفوز العادي: <strong>+15 عملة</strong></li>
+                    <li>الفوز بتحدي اليوم: <strong>+25 عملة</strong></li>
+                    <li>استخدام تلميح: <strong>-15 عملة</strong></li>
+                    <li>الخسارة (ترضية): <strong>+5 عملات</strong></li>
+                </ul>
+                <p style="margin-bottom: 8px; color: var(--primary-color);"><strong>🔤 ملاحظات على الحروف:</strong></p>
+                <ul style="padding-right: 20px; line-height: 1.6;">
+                    <li>حروف (أ، إ، آ) تُعامل كحرف <strong>(ا)</strong>.</li>
+                    <li>حرف (ى) يُعامل كحرف <strong>(ي)</strong>.</li>
+                    <li>حرف التاء المربوطة <strong>(ة)</strong> يكتب كما هو.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-challenge" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <button class="close-modal"><svg class="nano-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            <h2>أنشئ تحدي لصديق 🔗</h2>
+            <p style="margin-bottom: 15px; color: var(--text-secondary);">اكتب كلمة (من 4 إلى 6 حروف) وارسل الرابط لصديقك!</p>
+            <input type="text" id="challenge-input" placeholder="اكتب الكلمة هنا..." maxlength="6" style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid var(--tile-border); background: var(--tile-bg); color: var(--text-primary); font-size: 1.2rem; text-align: center; margin-bottom: 15px; font-weight: bold;">
+            <button id="btn-generate-link" class="primary-btn">انسخ رابط التحدي</button>
+        </div>
+    </div>
+
+    <div id="modal-leaderboard" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <button class="close-modal"><svg class="nano-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            <h2 style="margin-bottom: 15px;">أبطال اللعبة 🏆</h2>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px;">أعلى اللاعبين تحقيقاً للانتصارات المتتالية</p>
+            <div id="leaderboard-list" class="leaderboard-container"></div>
+        </div>
+    </div>
+
+    <div id="modal-stats" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <button class="close-modal"><svg class="nano-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            <h2>النتيجة والإحصائيات</h2>
+            <div class="stats-grid">
+                <div class="stat-box"><span id="stat-played">0</span><small>لعب</small></div>
+                <div class="stat-box"><span id="stat-winpct">0%</span><small>فوز</small></div>
+                <div class="stat-box"><span id="stat-streak">0</span><small>السلسلة</small></div>
+                <div class="stat-box"><span id="stat-maxstreak">0</span><small>أعلى سلسلة</small></div>
+            </div>
+            
+            <div id="game-result-area" class="hidden">
+                <h3 id="result-title"></h3>
+                <p id="result-word" style="font-size: 1.2rem; margin: 10px 0;"></p>
+                
+                <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary-color); padding: 10px; border-radius: 12px; margin-bottom: 15px; text-align: right;">
+                    <span style="font-size: 0.8rem; color: var(--primary-color); font-weight: bold;">📖 المعجم الذكي:</span>
+                    <p id="word-meaning" style="font-size: 0.9rem; margin-top: 5px;"></p>
+                </div>
+
+                <p id="result-coins" style="font-weight: bold; margin-bottom: 15px; color: var(--present);"></p>
+                
+                <div id="daily-timer-box" style="background: rgba(0,0,0,0.05); padding: 10px; border-radius: 12px; margin-bottom: 15px;">
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 5px;">الكلمة اليومية القادمة بعد</p>
+                    <h3 id="daily-countdown" style="font-variant-numeric: tabular-nums; letter-spacing: 2px;">00:00:00</h3>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button id="btn-share" class="primary-btn" style="flex: 1;">شارك</button>
+                    <button id="btn-new-game" class="primary-btn" style="flex: 1; background: var(--correct);">مجدداً</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-settings" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <button class="close-modal"><svg class="nano-icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            <h2 style="margin-bottom: 20px;">الإعدادات</h2>
+            
+            <div class="custom-selector-group">
+                <label>المظهر (الثيم):</label>
+                <div class="segmented-control" id="theme-selector">
+                    <button class="seg-btn active" data-val="modern">حديث</button>
+                    <button class="seg-btn" data-val="dark">داكن</button>
+                </div>
+            </div>
+            
+            <div class="settings-group toggle-group">
+                <label for="colorblind-toggle" style="display: flex; align-items: center; gap: 8px;">
+                    <svg class="nano-icon" style="color:var(--primary-color)" viewBox="0 0 24 24"><path d="M2 12S5 5 12 5s10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    وضع عمى الألوان (تباين عالي)
+                </label>
+                <label class="switch"><input type="checkbox" id="colorblind-toggle"><span class="slider"></span></label>
+            </div>
+
+            <div class="settings-group toggle-group">
+                <label for="strict-mode-toggle" style="display: flex; align-items: center; gap: 8px;">
+                    <svg class="nano-icon" style="color:var(--primary-color)" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> 
+                    الكلمات الصحيحة فقط
+                </label>
+                <label class="switch"><input type="checkbox" id="strict-mode-toggle" checked><span class="slider"></span></label>
+            </div>
+
+            <div class="settings-group toggle-group">
+                <label for="sound-toggle" style="display: flex; align-items: center; gap: 8px;">
+                    <svg class="nano-icon" style="color:var(--primary-color)" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                    المؤثرات الصوتية
+                </label>
+                <label class="switch"><input type="checkbox" id="sound-toggle" checked><span class="slider"></span></label>
+            </div>
+            
+            <div class="settings-group toggle-group">
+                <label for="vibrate-toggle" style="display: flex; align-items: center; gap: 8px;">
+                    <svg class="nano-icon" style="color:var(--primary-color)" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                    الاهتزاز
+                </label>
+                <label class="switch"><input type="checkbox" id="vibrate-toggle" checked><span class="slider"></span></label>
+            </div>
+            
+            <hr style="border-color: var(--glass-border); margin: 15px 0; opacity: 0.5;">
+            <button id="btn-reset-stats" class="action-btn" style="width:100%; justify-content:center; color: #ef4444; border-color: #ef4444;">
+                <svg class="nano-icon" style="width:18px;height:18px;" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                حذف البيانات وإعادة الضبط
+            </button>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>

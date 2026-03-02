@@ -1,0 +1,43 @@
+{
+    "name": "الكلمة المفقودة - التحدي العربي",
+    "short_name": "الكلمة",
+    "description": "العب الكلمة المفقودة، تحدى أصدقائك، واكتشف كلمة اليوم في أفضل نسخة عربية.",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#0f172a",
+    "theme_color": "#3b82f6",
+    "orientation": "portrait-primary",
+    "lang": "ar",
+    "dir": "rtl",
+    "categories": ["games", "puzzle", "education"],
+    "icons": [
+        {
+            "src": "icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "تحدي اليوم",
+            "short_name": "اليومي",
+            "description": "العب كلمة اليوم الموحدة",
+            "url": "./index.html?mode=daily",
+            "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+        },
+        {
+            "name": "تحدي الأصدقاء",
+            "short_name": "تحدي",
+            "description": "أنشئ رابطاً لتحدي صديق",
+            "url": "./index.html?mode=friend",
+            "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+        }
+    ]
+}
